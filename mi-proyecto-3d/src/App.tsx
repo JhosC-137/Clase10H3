@@ -1,120 +1,57 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+import { ToothpasteCanvas } from './components/ToothpasteCanvas'
+import { ControlMenu } from './components/ControlMenu'
 import './App.css'
 
+interface Toothpaste {
+  id: number
+  color: string
+}
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [toothpastes, setToothpastes] = useState<Toothpaste[]>([
+    { id: 1, color: '#FF0000' },
+  ])
+  const [currentColor, setCurrentColor] = useState('#FF0000')
+  const [nextId, setNextId] = useState(2)
+
+  const handleAddMultipleToothpastes = (quantity: number) => {
+    if (toothpastes.length + quantity <= 8) {
+      const newToothpastes = [...toothpastes]
+      for (let i = 0; i < quantity; i++) {
+        newToothpastes.push({ id: nextId + i, color: currentColor })
+      }
+      setToothpastes(newToothpastes)
+      setNextId(nextId + quantity)
+    }
+  }
+
+  const handleClearAll = () => {
+    setToothpastes([])
+    setNextId(1)
+  }
+
+  const handleColorChange = (color: string) => {
+    setCurrentColor(color)
+    // Cambiar el color de todos los dentífricos existentes en tiempo real
+    setToothpastes(toothpastes.map(t => ({ ...t, color })))
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    <div className="app-container">
+      <div className="canvas-wrapper">
+        <ToothpasteCanvas toothpastes={toothpastes} />
+      </div>
+      <div className="menu-wrapper">
+        <ControlMenu
+          toothpasteCount={toothpastes.length}
+          onAddMultipleToothpastes={handleAddMultipleToothpastes}
+          onClearAll={handleClearAll}
+          onColorChange={handleColorChange}
+          currentColor={currentColor}
+        />
+      </div>
+    </div>
   )
 }
 
